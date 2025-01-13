@@ -32,15 +32,10 @@ def train(model, criterion, epochs, train_dataloader, val_dataloader, attribute_
             correct += (predictions == labels).sum().item()
             total += labels.size(0)
 
-            if (i + 1) % 100 == 0:
-                print(f'Epoch [{epoch + 1}/{epochs}], Step [{i + 1}/{len(train_dataloader)}], '
-                      f'Loss: {train_loss / 100:.4f}, '
-                      f'Accuracy: {100 * correct / total:.2f}%')
-                train_loss = 0
-
         # Validation phase
         val_loss, val_accuracy = validate(model, criterion, attribute_idx, val_dataloader)
-        print(f'Epoch [{epoch + 1}] Validation Loss: {val_loss:.4f}, '
+        train_loss /= len(train_dataloader)
+        print(f'Epoch [{epoch + 1}] Train loss: {train_loss:.4f} Validation Loss: {val_loss:.4f}, '
               f'Validation Accuracy: {val_accuracy:.2f}%')
 
         # Early stopping check

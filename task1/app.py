@@ -14,9 +14,9 @@ def gender_classifier():
     train_loader, val_dataloader, test_dataloader = prepare_train_val_test_loaders(batch_size=512)
 
     # training
-    # model = GenderClassifierCNN().to(device)
-    # criterion = nn.BCELoss()
-    # train(model, criterion, 20, train_loader, val_loader, 20, 3, "./models/gender_classifier.pth")
+    model = GenderClassifierCNN(learning_rate=0.0001).to(device)
+    criterion = nn.BCELoss()
+    train(model, criterion, 50, train_loader, val_dataloader, 20, 3, "./models/gender_classifier1.pth")
 
     # testing
     model = GenderClassifierCNN().to(device)
@@ -35,9 +35,9 @@ def smiling_classifier():
     train_dataloader, val_dataloader, test_dataloader = prepare_train_val_test_loaders(batch_size=512, train_fraction=0.2)
 
     # training
-    # model = SmilingClassifierResnet(learning_rate=0.00001).to(device)
-    # criterion = nn.BCELoss()
-    # train(model, criterion, 20, train_dataloader, val_dataloader, 31, 5, "./models/smiling_classifier.pth")
+    model = SmilingClassifierResnet(learning_rate=0.0001).to(device)
+    criterion = nn.BCELoss()
+    train(model, criterion, 50, train_dataloader, val_dataloader, 31, 3, "./models/smiling_classifier1.pth")
 
     # testing
     model = SmilingClassifierResnet().to(device)
