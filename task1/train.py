@@ -33,7 +33,7 @@ def train(model, criterion, epochs, train_dataloader, val_dataloader, attribute_
             total += labels.size(0)
 
             if (i + 1) % 100 == 0:
-                print(f'Epoch [{epoch + 1}], Step [{i + 1}/{len(train_dataloader)}], '
+                print(f'Epoch [{epoch + 1}/{epochs}], Step [{i + 1}/{len(train_dataloader)}], '
                       f'Loss: {train_loss / 100:.4f}, '
                       f'Accuracy: {100 * correct / total:.2f}%')
                 train_loss = 0

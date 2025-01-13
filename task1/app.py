@@ -21,7 +21,7 @@ def gender_classifier():
     # testing
     model = GenderClassifierCNN().to(device)
     model.load_model("./models/gender_classifier.pth")
-    # test(model, test_dataloader, 20)
+    test(model, test_dataloader, 20)
 
     # custom wider testing
     custom_wider_loader = prepare_custom_wider_loader()
@@ -32,7 +32,7 @@ def smiling_classifier():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
-    # train_dataloader, val_dataloader, test_dataloader = prepare_train_val_test_loaders(batch_size=512, train_fraction=0.2)
+    train_dataloader, val_dataloader, test_dataloader = prepare_train_val_test_loaders(batch_size=512, train_fraction=0.2)
 
     # training
     # model = SmilingClassifierResnet(learning_rate=0.00001).to(device)
@@ -42,12 +42,12 @@ def smiling_classifier():
     # testing
     model = SmilingClassifierResnet().to(device)
     model.load_model("./models/smiling_classifier.pth")
-    # test(model, test_dataloader, 31)
+    test(model, test_dataloader, 31)
 
     # custom wider testing
     custom_wider_loader = prepare_custom_wider_loader()
     test_with_custom_wider(model, custom_wider_loader, "smiling")
 
 if __name__ == '__main__':
-    # gender_classifier()
+    gender_classifier()
     smiling_classifier()
