@@ -37,7 +37,7 @@ def smiling_classifier():
     # training
     model = SmilingClassifierResnet(learning_rate=0.000005).to(device)
     criterion = nn.BCELoss()
-    train(model, criterion, 50, train_dataloader, val_dataloader, 31, 3, "./models/smiling_classifier1.pth")
+    # train(model, criterion, 50, train_dataloader, val_dataloader, 31, 3, "./models/smiling_classifier1.pth")
 
     # testing
     model = SmilingClassifierResnet().to(device)
@@ -45,7 +45,7 @@ def smiling_classifier():
     test(model, test_dataloader, 31)
 
     # custom wider testing
-    custom_wider_loader = prepare_custom_wider_loader()
+    custom_wider_loader = prepare_custom_wider_loader(resnet=True)
     test_with_custom_wider(model, custom_wider_loader, "smiling")
 
 if __name__ == '__main__':

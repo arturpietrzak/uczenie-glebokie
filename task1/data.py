@@ -76,12 +76,19 @@ def prepare_train_val_test_loaders(batch_size=512, train_fraction=0.8, resnet=Fa
     return train_loader, val_loader, test_loader
 
 
-def prepare_custom_wider_loader(batch_size=512):
-    transform = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-    ])
+def prepare_custom_wider_loader(batch_size=512, resnet=False):
+    if resnet:
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+    else:
+        transform = transforms.Compose([
+            transforms.Resize((64, 64)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        ])
     custom_dataset = CustomWiderDataset(
         "./data/wider_test/wider_test_processed_labels.csv",
         "./data/wider_test/wider_test_processed",
