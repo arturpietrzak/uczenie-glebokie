@@ -3,8 +3,8 @@ import torch
 import torchvision.transforms as transforms
 from skimage.feature import Cascade
 from PIL import Image
-from GenderClassifierCNN import GenderClassifierCNN
-from SmilingClassifierResnet import SmilingClassifierResnet
+from task1.GenderClassifierCNN import GenderClassifierCNN
+from task1.SmilingClassifierResnet import SmilingClassifierResnet
 
 
 def detect(frame, detector):
@@ -16,20 +16,44 @@ def detect(frame, detector):
         y = detection['r']
         w = detection['width']
         h = detection['height']
-        boxes.append((x, y, w, h))
+
+        padding = int(h * 0.6)
+
+        # Adjust x, y, w, h for padding
+        x_padded = max(0, x - padding)  # Ensure x doesn't go out of bounds
+        y_padded = max(0, y - padding)
+        w_padded = min(frame.shape[1] - x_padded, w + 2 * padding)
+        h_padded = min(frame.shape[0] - y_padded, h + 2 * padding)
+
+        # Adjust to 1:1.22 aspect ratio (178px/218px)
+        new_h = int(w_padded * 1.22)
+        y_adjustment = (h_padded - new_h) // 2
+
+        # Ensure we don't go out of frame bounds
+        y = max(0, y_padded + y_adjustment)
+        h = min(new_h, frame.shape[0] - y)
+
+        boxes.append((x_padded, y, w_padded, h))
     return boxes
 
 
-def preprocess_face(frame, box):
+def preprocess_face(frame, box, resnet=False):
     x, y, w, h = box
     face = frame[y:y + h, x:x + w]
     face_pil = Image.fromarray(cv2.cvtColor(face, cv2.COLOR_BGR2RGB))
 
-    transform = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-    ])
+    if resnet:
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+    else:
+        transform = transforms.Compose([
+            transforms.Resize((64, 64)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        ])
 
     return transform(face_pil).unsqueeze(0)
 
@@ -78,8 +102,8 @@ def main():
     gender_model = GenderClassifierCNN()
     smile_model = SmilingClassifierResnet()
 
-    gender_model.load_model("./models/gender_classifier.pth")
-    smile_model.load_model("./models/smiling_classifier.pth")
+    gender_model.load_model("./models/gender_classifier1.pth")
+    smile_model.load_model("./models/smiling_classifier1.pth")
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     gender_model = gender_model.to(device)
@@ -112,12 +136,12 @@ def main():
 
                 # Process each detected face
                 for box in boxes:
-                    face_tensor = preprocess_face(frame, box)
-                    face_tensor = face_tensor.to(device)
+                    gender_tensor = preprocess_face(frame, box).to(device)
+                    smile_tensor = preprocess_face(frame, box).to(device)
 
                     # Get predictions from both models
-                    gender_pred = gender_model(face_tensor).item()
-                    smile_pred = smile_model(face_tensor).item()
+                    gender_pred = gender_model(gender_tensor).item()
+                    smile_pred = smile_model(smile_tensor).item()
 
                     gender_predictions.append(gender_pred)
                     smile_predictions.append(smile_pred)
