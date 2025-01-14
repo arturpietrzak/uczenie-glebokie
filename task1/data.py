@@ -47,13 +47,20 @@ class CustomWiderDataset(Dataset):
         return image, (torch.tensor(male, dtype=torch.float), torch.tensor(smiling, dtype=torch.float))
 
 
-def prepare_train_val_test_loaders(batch_size=512, train_fraction=0.2):
+def prepare_train_val_test_loaders(batch_size=512, train_fraction=0.8, resnet=False):
     print(f"Loading datasets")
-    transform = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-    ])
+    if resnet:
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+    else:
+        transform = transforms.Compose([
+            transforms.Resize((64, 64)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        ])
 
     full_train_dataset = CelebA(root='./data', split='train', target_type='attr', transform=transform, download=False)
     train_size = int(train_fraction * len(full_train_dataset))

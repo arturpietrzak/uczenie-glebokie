@@ -2,19 +2,19 @@ import torch
 import torch.nn as nn
 import os
 from torch.optim import Adam
-from torchvision.models import resnet34
+from torchvision.models import resnet18
 
 
 class SmilingClassifierResnet(nn.Module):
     def __init__(self, learning_rate=0.001):
         super().__init__()
         self.learning_rate=learning_rate
-        model = resnet34(pretrained=True)
+        model = resnet18(pretrained=True)
         model.fc = nn.Sequential(
-            nn.Linear(model.fc.in_features, 256),
+            nn.Linear(model.fc.in_features, 128),
             nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, 1),
+            nn.Dropout(0.2),
+            nn.Linear(128, 1),
             nn.Sigmoid()
         )
         self.model = model
