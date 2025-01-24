@@ -9,8 +9,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def prepare_train_val_test_loaders(dataset_name, batch_size=32):
 
+
+def prepare_train_val_test_loaders(dataset_name, batch_size=32, property_idx=0):
     if dataset_name == "BACE":
         dataset = MoleculeNet(root="data/BACE", name="BACE")
 
@@ -30,6 +31,7 @@ def prepare_train_val_test_loaders(dataset_name, batch_size=32):
         return train_loader, val_loader, test_loader
     elif dataset_name == "QM9":
         dataset = QM9(root="data/QM9")
+        dataset.data.y = dataset.data.y[:, property_idx:property_idx + 1]
 
         num_samples = len(dataset)
         train_size = int(0.8 * num_samples)
